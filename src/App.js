@@ -1,23 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect } from "react";
+import "./App.css";
+import { ContactsPage } from "./Contacts";
+import { LoginPage } from "./Login";
 
 function App() {
+  useEffect(() => {
+    fetch("http://localhost:8080/status")
+      .then((res) => res.text())
+      .then((data) => {
+        console.log(data);
+      });
+
+    console.log(localStorage.getItem("sessionToken"));
+  }, []);
+
+  const authTokens = localStorage.getItem("sessionToken");
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      Hello World
+      {authTokens ? <LoginPage /> : <ContactsPage />}
     </div>
   );
 }
