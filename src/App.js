@@ -1,33 +1,20 @@
-import {useState, useEffect } from "react";
+import { createContext, useState } from "react";
 import "./App.css";
 import { ContactsPage } from "./Contacts";
 import { LoginPage } from "./Login";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
-function App() {
-  const [userDetails, setUserDetails] = useState(null);
+export const AuthContext = createContext();
+
+const App = () => {
   const existingTokens = localStorage.getItem("authToken");
   const [authTokens, setAuthTokens] = useState(existingTokens);
-  useEffect(() => {
-    console.log('Something');
-    fetch("http://localhost:8080/status")
-      .then((res) => res.text())
-      .then((data) => {
-        console.log(data);
-      });
-
-    console.log(localStorage.getItem("sessionToken"));
-    setAuthTokens(localStorage.getItem("sessionToken"));
-  }, []);
-
-  // const authTokens = localStorage.getItem("sessionToken");
 
   return (
-    <div>
-      Hello World
-      {authTokens ? <LoginPage /> : <ContactsPage userDetails={userDetails} setAuthTokens={setAuthTokens}/>}
-    </div>
+    <AuthContext.Provider value={{ authTokens, setAuthTokens }}>
+      {authTokens ? <ContactsPage /> : <LoginPage />}
+    </AuthContext.Provider>
   );
-}
+};
 
 export default App;

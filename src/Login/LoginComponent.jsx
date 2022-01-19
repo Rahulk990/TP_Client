@@ -1,14 +1,14 @@
 import { Box, Button, TextField } from "@mui/material";
 import bcrypt from "bcryptjs/dist/bcrypt";
 import React, { useContext, useState } from "react";
-// import { AuthContext } from "../App";
+import { AuthContext } from "../App";
 
 const LoginComponent = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isWrong, setIsWrong] = useState(false);
 
-  // const { setAuthTokens } = useContext(AuthContext);
+  const { setAuthTokens } = useContext(AuthContext);
 
   const signInHandler = () => {
     const url = "http://localhost:8080/login";
@@ -30,7 +30,7 @@ const LoginComponent = () => {
           setIsWrong(true);
         } else {
           localStorage.setItem("authToken", data);
-          // setAuthTokens(data);
+          setAuthTokens(data);
         }
       });
   };
