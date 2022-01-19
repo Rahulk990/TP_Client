@@ -6,12 +6,12 @@ import { LoginPage } from "./Login";
 export const AuthContext = createContext();
 
 function App() {
-  const existingTokens = JSON.parse(localStorage.getItem("authToken"));
+  const existingTokens = localStorage.getItem("authToken");
   const [authTokens, setAuthTokens] = useState(existingTokens);
 
   return (
     <AuthContext.Provider value={{ authTokens, setAuthTokens }}>
-      {authTokens ? <LoginPage /> : <ContactsPage />}
+      {authTokens ? <ContactsPage /> : <LoginPage />}
     </AuthContext.Provider>
   );
 }
