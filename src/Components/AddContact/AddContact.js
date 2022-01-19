@@ -1,7 +1,7 @@
 import { Fab } from '@mui/material'
 import React from 'react'
 import AddIcon from '@mui/icons-material/Add';
-import AddContactDialog from './AddContactDialog';
+import ContactDialog from '../ContactDialog/ContactDialog';
 function AddContact() {
     const [open, setOpen] = React.useState(false);
     const handleAddContactClick = () => {
@@ -15,7 +15,7 @@ function AddContact() {
             <Fab color="primary" aria-label="add" onClick={handleAddContactClick}>
                 <AddIcon />
             </Fab>
-            <AddContactDialog open={open} handleClose={handleClose}/>
+            <ContactDialog open={open} handleClose={handleClose} editMode={false}/>
         </div>
     )
 }

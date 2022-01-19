@@ -1,7 +1,7 @@
 import { Box, Button, TextField } from "@mui/material";
 import bcrypt from "bcryptjs/dist/bcrypt";
 import React, { useContext, useState } from "react";
-import { AuthContext } from "../App";
+// import { AuthContext } from "../App";
 
 const RegisterComponent = () => {
   const [name, setName] = useState("");
@@ -9,7 +9,7 @@ const RegisterComponent = () => {
   const [password, setPassword] = useState("");
   const [isEmailPresent, setIsEmailPresent] = useState(false);
 
-  const { setAuthTokens } = useContext(AuthContext);
+  // const { setAuthTokens } = useContext(AuthContext);
 
   const registerHandler = () => {
     const url = "http://localhost:8080/register";
@@ -32,7 +32,7 @@ const RegisterComponent = () => {
           setIsEmailPresent(true);
         } else {
           localStorage.setItem("authToken", data);
-          setAuthTokens(data);
+          // setAuthTokens(data);
         }
       });
   };
