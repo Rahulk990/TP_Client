@@ -1,10 +1,9 @@
-import { createContext, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import { ContactsPage } from "./Contacts";
 import { LoginPage } from "./Login";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-export const AuthContext = createContext();
+import { AuthContext } from "./utils/contextUtils";
 
 const App = () => {
   const existingTokens = localStorage.getItem("authToken");

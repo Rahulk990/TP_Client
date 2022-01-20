@@ -1,40 +1,33 @@
 import { Box, Button, TextField } from "@mui/material";
-import bcrypt from "bcryptjs/dist/bcrypt";
-import React, { useContext, useState } from "react";
-import { AuthContext } from "../App";
+import React, { useState } from "react";
+import { registerUser } from "../utils/APIUtils";
+import { useAuth } from "../utils/contextUtils";
+import { setLocalAuthTokens } from "../utils/localStorageUtils";
+import {
+  ERROR_EMAIL_EXISTS,
+  STATE_REGISTER_DATA,
+} from "../utils/globalConstants";
 
 const RegisterComponent = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [registerData, setRegisterData] = useState(STATE_REGISTER_DATA);
   const [isEmailPresent, setIsEmailPresent] = useState(false);
+  const { setAuthTokens } = useAuth();
 
-  const { setAuthTokens } = useContext(AuthContext);
+  const changeHandler = (prop) => (event) => {
+    setIsEmailPresent(false);
+    setRegisterData({ ...registerData, [prop]: event.target.value });
+  };
 
   const registerHandler = () => {
-    const url = "http://localhost:8080/register";
-    const data = {
-      fullName: name,
-      email: email,
-      passwordHash: bcrypt.hashSync(password, "$2a$10$CwTycUXWue0Thq9StjUM0u"),
-    };
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.text())
-      .then((data) => {
-        if (data === "Email Already Exists") {
-          setIsEmailPresent(true);
-        } else {
-          localStorage.setItem("authToken", data);
-          setAuthTokens(data);
-        }
-      });
+    registerUser(registerData).then((res) => {
+      if (res === ERROR_EMAIL_EXISTS) {
+        setIsEmailPresent(true);
+        setRegisterData(STATE_REGISTER_DATA);
+      } else {
+        setLocalAuthTokens(res);
+        setAuthTokens(res);
+      }
+    });
   };
 
   return (
@@ -50,21 +43,21 @@ const RegisterComponent = () => {
         <h1>Register</h1>
         <TextField
           label="Full Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={registerData.fullName}
+          onChange={changeHandler("fullName")}
         />
         <TextField
           error={isEmailPresent}
           label="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          helperText={isEmailPresent ? "Email Already Exists" : ""}
+          value={registerData.email}
+          onChange={changeHandler("email")}
+          helperText={isEmailPresent && ERROR_EMAIL_EXISTS}
         />
         <TextField
           label="Password"
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={registerData.passwordHash}
+          onChange={changeHandler("passwordHash")}
         />
         <Button variant="contained" onClick={registerHandler}>
           Sign Up

@@ -1,60 +1,82 @@
-import React, { useContext, useEffect, useState } from "react";
-import Navbar from "../Components/Navbar/Navbar";
-import AddContact from "../Components/AddContact/AddContact";
-import SearchBar from "../Components/SearchBar/SearchBar";
-import ContactList from "../Components/ContactList/ContactList.js";
+import React, { useEffect, useState } from "react";
+import Navbar from "./Navbar";
+import AddContact from "./AddContact";
+import SearchBar from "./SearchBar";
+import ContactList from "./ContactList/ContactList.js";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { AuthContext } from "../App";
+import { useAuth } from "../utils/contextUtils";
+import { getContacts, getUserData } from "../utils/APIUtils";
+import { removeLocalAuthTokens } from "../utils/localStorageUtils";
+import { Box } from "@mui/system";
+import { filterAndSortList } from "../utils/filterUtil";
 
 const ContactsPage = () => {
-  const [userDetails, setUserDetails] = useState({});
-  const [contactsList, setContactsList] = useState([
-    {
-      fullName: "harsh",
-      email: "abc@abc.com",
-      phoneNumber: "2222222",
-      address: "Sant Garh",
-    },
-    {
-      fullName: "rahul",
-      email: "abc@abc.com",
-      phoneNumber: "333333",
-      address: "delhi",
-    },
-  ]);
+  const [userData, setUserData] = useState({});
+  const [contactsList, setContactsList] = useState([]);
+  const [filteredList, setFilteredList] = useState([]);
+  const { authTokens, setAuthTokens } = useAuth();
 
-  const { authTokens } = useContext(AuthContext);
+  const unauthorizedErrorHandler = () => {
+    removeLocalAuthTokens();
+    setUserData({});
+    setAuthTokens("");
+  };
+
+  const fetchContactList = () => {
+    // getContacts(authTokens)
+    //   .then((res) => {
+    //     console.log(res);
+    //     setContactsList(res);
+    //   })
+    //   .catch((_) => {
+    //     unauthorizedErrorHandler();
+    //   });
+
+    setContactsList(getContacts(authTokens));
+  };
+
+  const startScoreUpdater = () => {
+    fetchContactList();
+    setInterval(fetchContactList, 60000);
+  };
+
   useEffect(() => {
-    console.log(authTokens);
-    const url = "http://localhost:8080/userData";
-    fetch(url, {
-      headers: {
-        Authorization: authTokens,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
+    getUserData(authTokens)
+      .then((res) => {
+        setUserData(res);
+        startScoreUpdater();
+      })
+      .catch((_) => {
+        unauthorizedErrorHandler();
       });
-  }, [authTokens]);
+  }, [authTokens, setAuthTokens]);
 
-  // const syncScoresWithBackend = () => {
-  // }
-
-  // setInterval(syncScoresWithBackend, 5000);
+  const filterList = (value) => {
+    value === ""
+      ? setFilteredList([])
+      : setFilteredList(filterAndSortList(contactsList, value));
+  };
 
   return (
     <>
-      <Navbar />
-      <div style={{ marginTop: "30px" }}>
+      <Navbar userData={userData} />
+      <Box
+        sx={{
+          marginTop: 10,
+          display: "flex",
+          justifyContent: "center",
+          flex: 1,
+          gap: 10,
+          padding: "0 40px",
+        }}
+      >
+        <SearchBar filterList={filterList} />
         <AddContact />
-      </div>
-      <div style={{ marginTop: "40px" }}>
-        <SearchBar />
-      </div>
-
+      </Box>
       <div style={{ marginTop: "50px" }}>
-        <ContactList contactsList={contactsList} />
+        <ContactList
+          contactsList={filteredList.length ? filteredList : contactsList}
+        />
       </div>
     </>
   );

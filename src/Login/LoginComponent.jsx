@@ -1,38 +1,33 @@
 import { Box, Button, TextField } from "@mui/material";
-import bcrypt from "bcryptjs/dist/bcrypt";
-import React, { useContext, useState } from "react";
-import { AuthContext } from "../App";
+import React, { useState } from "react";
+import { loginUser } from "../utils/APIUtils";
+import { useAuth } from "../utils/contextUtils";
+import { setLocalAuthTokens } from "../utils/localStorageUtils";
+import {
+  ERROR_WRONG_CREDENTIALS,
+  STATE_LOGIN_DATA,
+} from "../utils/globalConstants";
 
 const LoginComponent = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [loginData, setLoginData] = useState(STATE_LOGIN_DATA);
   const [isWrong, setIsWrong] = useState(false);
+  const { setAuthTokens } = useAuth();
 
-  const { setAuthTokens } = useContext(AuthContext);
+  const changeHandler = (prop) => (event) => {
+    setIsWrong(false);
+    setLoginData({ ...loginData, [prop]: event.target.value });
+  };
 
   const signInHandler = () => {
-    const url = "http://localhost:8080/login";
-    const data = {
-      email: email,
-      passwordHash: bcrypt.hashSync(password, "$2a$10$CwTycUXWue0Thq9StjUM0u"),
-    };
-
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((res) => res.text())
-      .then((data) => {
-        if (data === "Incorrect Email or Password") {
-          setIsWrong(true);
-        } else {
-          localStorage.setItem("authToken", data);
-          setAuthTokens(data);
-        }
-      });
+    loginUser(loginData).then((res) => {
+      if (res === ERROR_WRONG_CREDENTIALS) {
+        setIsWrong(true);
+        setLoginData(STATE_LOGIN_DATA);
+      } else {
+        setLocalAuthTokens(res);
+        setAuthTokens(res);
+      }
+    });
   };
 
   return (
@@ -49,17 +44,17 @@ const LoginComponent = () => {
         <TextField
           error={isWrong}
           label="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          helperText={isWrong ? "Incorrect Email or Password" : ""}
+          value={loginData.email}
+          onChange={changeHandler("email")}
+          helperText={isWrong && ERROR_WRONG_CREDENTIALS}
         />
         <TextField
           error={isWrong}
           label="Password"
           type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          helperText={isWrong ? "Incorrect Email or Password" : ""}
+          value={loginData.passwordHash}
+          onChange={changeHandler("passwordHash")}
+          helperText={isWrong && ERROR_WRONG_CREDENTIALS}
         />
         <Button variant="contained" onClick={signInHandler}>
           Sign In
