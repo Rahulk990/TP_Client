@@ -1,6 +1,13 @@
 import { Button, Dialog, TextField } from "@mui/material";
 import React, { useState } from "react";
-import { STATE_CONTACT_DATA } from "../utils/globalConstants";
+import { useContact } from "../utils/contextUtils";
+
+const STATE_CONTACT_DATA = {
+  fullName: "",
+  email: "",
+  phoneNumber: "",
+  address: "",
+};
 
 const styles = {
   dialogHeading: {
@@ -22,16 +29,21 @@ function merge(obj1, obj2) {
 
 const ContactDialog = ({ open, handleClose, editMode, contact }) => {
   const initialState = editMode
-    ? STATE_CONTACT_DATA
-    : merge(STATE_CONTACT_DATA, contact);
+    ? merge(STATE_CONTACT_DATA, contact)
+    : STATE_CONTACT_DATA;
 
-  const [contactData, setContactData] = useState(initialState);
+  const { addContact, updateContact } = useContact();
+  const [contactData, setContactData] = useState({ ...initialState });
   const changeHandler = (prop) => (event) => {
     setContactData({ ...contactData, [prop]: event.target.value });
   };
 
   const saveHandler = () => {
-    console.log(contactData);
+    editMode
+      ? updateContact(merge(contact, contactData))
+      : addContact(contactData);
+    handleClose();
+    setContactData(STATE_CONTACT_DATA);
   };
 
   return (
@@ -85,7 +97,7 @@ const ContactDialog = ({ open, handleClose, editMode, contact }) => {
         </div>
         <div className="d-flex justify-content-center">
           <Button variant="contained" onClick={saveHandler}>
-            Save
+            {editMode ? "Save" : "Add"}
           </Button>
         </div>
       </div>

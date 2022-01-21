@@ -5,6 +5,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContactDialog from "../ContactDialog";
 import ContactExpanded from "./ContactExpanded";
+import { useContact } from "../../utils/contextUtils";
 
 const styles = {
   container: {
@@ -21,11 +22,19 @@ const styles = {
   },
 };
 
-const Contact = ({ contact }) => {
+const Contact = ({ contact, isSearch }) => {
   const [openView, setOpenView] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const { updateContact, deleteContact } = useContact();
 
-  const handleDeleteClick = () => {};
+  const deleteHandler = () => {
+    deleteContact(contact.contactId);
+  };
+
+  const viewHandler = () => {
+    setOpenView(true);
+    isSearch && updateContact({ ...contact, score: contact.score + 1 });
+  };
 
   return (
     <div className="d-flex justify-content-center">
@@ -37,10 +46,7 @@ const Contact = ({ contact }) => {
         <span style={{ marginRight: "10px" }}>{contact.fullName}</span>
         <span>{contact.phoneNumber}</span>
         <div className="d-flex justify-content-between">
-          <VisibilityIcon
-            style={styles.icon}
-            onClick={() => setOpenView(true)}
-          />
+          <VisibilityIcon style={styles.icon} onClick={viewHandler} />
           <ContactExpanded
             open={openView}
             handleClose={() => setOpenView(false)}
@@ -53,7 +59,7 @@ const Contact = ({ contact }) => {
             editMode={true}
             contact={contact}
           />
-          <DeleteIcon style={styles.icon} onClick={handleDeleteClick} />
+          <DeleteIcon style={styles.icon} onClick={deleteHandler} />
         </div>
       </Card>
     </div>

@@ -39,26 +39,63 @@ export const getUserData = (token) => {
   return sendGetRequest(url, token);
 };
 
-export const getContacts = (token) => {
-  const url = BASE_URL + "/getContacts";
-  // return sendGetRequest(url, token);
+export const getContactsAPI = (token) => {
+  const url = BASE_URL + "/contacts";
+  return sendGetRequest(url, token);
+};
 
-  return [
-    {
-      contactId: 123,
-      fullName: "rharsh",
-      email: "abc@abc.com",
-      phoneNumber: "2222222",
-      address: "Sant Garh",
-      score: 2,
+export const addContactAPI = (contact, token) => {
+  const url = BASE_URL + "/contact";
+
+  return fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token,
     },
-    {
-      contactId: 1233,
-      fullName: "rahul",
-      email: "abc@abc.com",
-      phoneNumber: "333333",
-      address: "delhi",
-      score: 5,
+    body: JSON.stringify(contact),
+  }).then((res) => {
+    if (res.status === 401) {
+      throw new Error("Unauthorized");
+    } else {
+      return res.json();
+    }
+  });
+};
+
+export const updateContactAPI = (contact, token) => {
+  const url = BASE_URL + "/contact";
+
+  return fetch(url, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token,
     },
-  ];
+    body: JSON.stringify(contact),
+  }).then((res) => {
+    if (res.status === 401) {
+      throw new Error("Unauthorized");
+    } else {
+      return res.json();
+    }
+  });
+};
+
+export const deleteContactAPI = (contactId, token) => {
+  const url = BASE_URL + "/contact/" + contactId;
+
+  return fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+  }).then((res) => {
+    if (res.status === 401) {
+      throw new Error("Unauthorized");
+    } else {
+      return res.text();
+    }
+  });
 };

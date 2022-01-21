@@ -3,10 +3,12 @@ import React, { useState } from "react";
 import { loginUser } from "../utils/APIUtils";
 import { useAuth } from "../utils/contextUtils";
 import { setLocalAuthTokens } from "../utils/localStorageUtils";
-import {
-  ERROR_WRONG_CREDENTIALS,
-  STATE_LOGIN_DATA,
-} from "../utils/globalConstants";
+import { ERROR_WRONG_CREDENTIALS } from "../utils/globalConstants";
+
+const STATE_LOGIN_DATA = {
+  email: "",
+  passwordHash: "",
+};
 
 const LoginComponent = () => {
   const [loginData, setLoginData] = useState(STATE_LOGIN_DATA);
@@ -22,7 +24,6 @@ const LoginComponent = () => {
     loginUser(loginData).then((res) => {
       if (res === ERROR_WRONG_CREDENTIALS) {
         setIsWrong(true);
-        setLoginData(STATE_LOGIN_DATA);
       } else {
         setLocalAuthTokens(res);
         setAuthTokens(res);

@@ -3,10 +3,13 @@ import React, { useState } from "react";
 import { registerUser } from "../utils/APIUtils";
 import { useAuth } from "../utils/contextUtils";
 import { setLocalAuthTokens } from "../utils/localStorageUtils";
-import {
-  ERROR_EMAIL_EXISTS,
-  STATE_REGISTER_DATA,
-} from "../utils/globalConstants";
+import { ERROR_EMAIL_EXISTS } from "../utils/globalConstants";
+
+const STATE_REGISTER_DATA = {
+  fullName: "",
+  email: "",
+  passwordHash: "",
+};
 
 const RegisterComponent = () => {
   const [registerData, setRegisterData] = useState(STATE_REGISTER_DATA);
@@ -22,7 +25,6 @@ const RegisterComponent = () => {
     registerUser(registerData).then((res) => {
       if (res === ERROR_EMAIL_EXISTS) {
         setIsEmailPresent(true);
-        setRegisterData(STATE_REGISTER_DATA);
       } else {
         setLocalAuthTokens(res);
         setAuthTokens(res);

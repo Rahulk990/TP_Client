@@ -1,61 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import AddContact from "./AddContact";
 import SearchBar from "./SearchBar";
 import ContactList from "./ContactList/ContactList.js";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useAuth } from "../utils/contextUtils";
-import { getContacts, getUserData } from "../utils/APIUtils";
+import { useAuth, useContact } from "../utils/contextUtils";
+import { getUserData } from "../utils/APIUtils";
 import { removeLocalAuthTokens } from "../utils/localStorageUtils";
 import { Box } from "@mui/system";
 import { filterAndSortList } from "../utils/filterUtil";
 
 const ContactsPage = () => {
   const [userData, setUserData] = useState({});
-  const [contactsList, setContactsList] = useState([]);
   const [filteredList, setFilteredList] = useState([]);
   const { authTokens, setAuthTokens } = useAuth();
-
-  const unauthorizedErrorHandler = () => {
-    removeLocalAuthTokens();
-    setUserData({});
-    setAuthTokens("");
-  };
-
-  const fetchContactList = () => {
-    // getContacts(authTokens)
-    //   .then((res) => {
-    //     console.log(res);
-    //     setContactsList(res);
-    //   })
-    //   .catch((_) => {
-    //     unauthorizedErrorHandler();
-    //   });
-
-    setContactsList(getContacts(authTokens));
-  };
-
-  const startScoreUpdater = () => {
-    fetchContactList();
-    setInterval(fetchContactList, 60000);
-  };
+  const { contactsList } = useContact();
 
   useEffect(() => {
     getUserData(authTokens)
       .then((res) => {
         setUserData(res);
-        startScoreUpdater();
       })
       .catch((_) => {
-        unauthorizedErrorHandler();
+        removeLocalAuthTokens();
+        setUserData({});
+        setAuthTokens("");
       });
   }, [authTokens, setAuthTokens]);
 
-  const filterList = (value) => {
-    value === ""
-      ? setFilteredList([])
-      : setFilteredList(filterAndSortList(contactsList, value));
-  };
+  const filterList = useCallback(
+    (value) => {
+      value === ""
+        ? setFilteredList([])
+        : setFilteredList(filterAndSortList(contactsList, value));
+    },
+    [contactsList]
+  );
+
+  const contactsListProp = filteredList.length ? filteredList : contactsList;
 
   return (
     <>
@@ -75,11 +57,12 @@ const ContactsPage = () => {
       </Box>
       <div style={{ marginTop: "50px" }}>
         <ContactList
-          contactsList={filteredList.length ? filteredList : contactsList}
+          contactsList={contactsListProp}
+          isSearch={filteredList.length}
         />
       </div>
     </>
   );
 };
 
-export { ContactsPage };
+export default ContactsPage;
