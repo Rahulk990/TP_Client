@@ -57,6 +57,8 @@ export const addContactAPI = (contact, token) => {
   }).then((res) => {
     if (res.status === 401) {
       throw new Error("Unauthorized");
+    } else if(res.status === 409) {
+      throw new Error("Contact Already Exists") 
     } else {
       return res.json();
     }
@@ -76,6 +78,8 @@ export const updateContactAPI = (contact, token) => {
   }).then((res) => {
     if (res.status === 401) {
       throw new Error("Unauthorized");
+    } else if(res.status === 404) {
+      throw new Error("Contact Not Found") 
     } else {
       return res.json();
     }
@@ -94,6 +98,8 @@ export const deleteContactAPI = (contactId, token) => {
   }).then((res) => {
     if (res.status === 401) {
       throw new Error("Unauthorized");
+    } else if(res.status === 404) {
+      throw new Error("Contact Not Found") 
     } else {
       return res.text();
     }
