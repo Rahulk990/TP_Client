@@ -8,8 +8,8 @@ export const filterAndSortList = (list, value) => {
   tempList.sort((a, b) => {
     if (a.score === b.score) {
       return (
-        b.fullName.toUpperCase().indexOf(value) -
-        a.fullName.toUpperCase().indexOf(value)
+        a.fullName.toUpperCase().indexOf(value) -
+        b.fullName.toUpperCase().indexOf(value)
       );
     } else return b.score - a.score;
   });

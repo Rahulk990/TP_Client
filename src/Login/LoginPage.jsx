@@ -14,7 +14,7 @@ const LoginPage = () => {
       }}
     >
       <LoginComponent />
-      <Divider orientation="vertical" flexItem />
+      <Divider style={{ height: "auto" }} orientation="vertical" flexItem />
       <RegisterComponent />
     </Box>
   );

@@ -47,18 +47,23 @@ const Contact = ({ contact, isSearch }) => {
         <span>{contact.phoneNumber}</span>
         <div className="d-flex justify-content-between">
           <VisibilityIcon style={styles.icon} onClick={viewHandler} />
-          <ContactExpanded
-            open={openView}
-            handleClose={() => setOpenView(false)}
-            contact={contact}
-          />
+          {openView && (
+            <ContactExpanded
+              open={openView}
+              handleClose={() => setOpenView(false)}
+              editMode={false}
+              contact={contact}
+            />
+          )}
           <EditIcon style={styles.icon} onClick={() => setOpenEdit(true)} />
-          <ContactDialog
-            open={openEdit}
-            handleClose={() => setOpenEdit(false)}
-            editMode={true}
-            contact={contact}
-          />
+          {openEdit && (
+            <ContactDialog
+              open={openEdit}
+              handleClose={() => setOpenEdit(false)}
+              editMode={true}
+              contact={contact}
+            />
+          )}
           <DeleteIcon style={styles.icon} onClick={deleteHandler} />
         </div>
       </Card>

@@ -34,7 +34,11 @@ const ContactManager = () => {
   const addContact = (contact) => {
     addContactAPI(contact, authTokens)
       .then((res) => {
-        setContactsList([...contactsList, res]);
+        setContactsList(
+          [...contactsList, res].sort((a, b) =>
+            ("" + a.fullName).localeCompare(b.fullName)
+          )
+        );
       })
       .catch((_) => {
         unauthorizedErrorHandler();

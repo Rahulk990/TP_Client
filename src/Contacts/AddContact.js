@@ -11,11 +11,14 @@ const AddContact = () => {
       <Fab color="primary" aria-label="add" onClick={() => setOpen(true)}>
         <AddIcon />
       </Fab>
-      <ContactDialog
-        open={open}
-        handleClose={() => setOpen(false)}
-        editMode={false}
-      />
+      {open && (
+        <ContactDialog
+          open={open}
+          handleClose={() => setOpen(false)}
+          editMode={false}
+          contact={{}}
+        />
+      )}
     </div>
   );
 };
