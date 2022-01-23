@@ -5,15 +5,17 @@ import { useAuth } from "../utils/contextUtils";
 import { setLocalAuthTokens } from "../utils/localStorageUtils";
 import { ERROR_WRONG_CREDENTIALS } from "../utils/globalConstants";
 import { validateEmail, validatePassword } from "../utils/validatorUtil";
+import { toast } from "react-toastify";
+
 
 const STATE_LOGIN_DATA = {
   email: "",
-  passwordHash: "",
+  password: "",
 };
 
 const STATE_LOGIN_ERROR = {
   email: null,
-  passwordHash: null,
+  password: null,
 };
 
 const LoginComponent = () => {
@@ -29,12 +31,12 @@ const LoginComponent = () => {
 
   const validate = () => {
     const emailError = validateEmail(loginData.email);
-    const passwordError = validatePassword(loginData.passwordHash);
+    const passwordError = validatePassword(loginData.password);
 
     if (emailError || passwordError) {
       setLoginError({
         email: emailError,
-        passwordHash: passwordError,
+        password: passwordError,
       });
       return false;
     }
@@ -45,18 +47,22 @@ const LoginComponent = () => {
   const signInHandler = () => {
     if (validate()) {
       loginUser(loginData).then((res) => {
-        if (res === ERROR_WRONG_CREDENTIALS) {
+        setTimeout(() => setIsLoading(false), 1000);
+        if (res.status === 404) {
           setLoginError({
             email: ERROR_WRONG_CREDENTIALS,
-            passwordHash: ERROR_WRONG_CREDENTIALS,
+            password: ERROR_WRONG_CREDENTIALS,
           });
-        } else {
-          setLocalAuthTokens(res);
-          setAuthTokens(res);
+        } else if(res.status === 400){
+          toast.error("Please enter valid values")
+        }  else {
+          return res.text();
         }
-        setTimeout(() => setIsLoading(false), 1000);
+      }).then(res => {
+        setLocalAuthTokens(res);
+        setAuthTokens(res);
+        setIsLoading(true);
       });
-      setIsLoading(true);
     }
   };
 
@@ -82,12 +88,12 @@ const LoginComponent = () => {
         />
         <TextField
           style={{ width: "100%" }}
-          error={!!loginError.passwordHash}
+          error={!!loginError.password}
           label="Password"
           type="password"
-          value={loginData.passwordHash}
-          onChange={changeHandler("passwordHash")}
-          helperText={loginError.passwordHash}
+          value={loginData.password}
+          onChange={changeHandler("password")}
+          helperText={loginError.password}
         />
         {isLoading ? (
           <CircularProgress />

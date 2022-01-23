@@ -9,6 +9,7 @@ import { getUserData } from "../utils/APIUtils";
 import { removeLocalAuthTokens } from "../utils/localStorageUtils";
 import { Box } from "@mui/system";
 import { filterAndSortList } from "../utils/filterUtil";
+import { ToastContainer } from "react-toastify";
 
 const ContactsPage = () => {
   const [userData, setUserData] = useState({});
@@ -61,6 +62,15 @@ const ContactsPage = () => {
           isSearch={filteredList.length}
         />
       </div>
+      <ToastContainer position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover/>
     </>
   );
 };
