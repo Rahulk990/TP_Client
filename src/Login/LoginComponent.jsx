@@ -62,7 +62,7 @@ const LoginComponent = () => {
         setLocalAuthTokens(res);
         setAuthTokens(res);
         setIsLoading(true);
-      });
+      }).catch(e => toast.error("Server Error"));
     }
   };
 

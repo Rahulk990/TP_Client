@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import {
   addContactAPI,
   deleteContactAPI,
@@ -34,13 +35,16 @@ const ContactManager = () => {
   const addContact = (contact) => {
     addContactAPI(contact, authTokens)
       .then((res) => {
-        setContactsList(
-          [...contactsList, res].sort((a, b) =>
-            ("" + a.fullName).localeCompare(b.fullName)
-          )
-        );
+        if(!res.statusCode) {
+          setContactsList(
+            [...contactsList, res].sort((a, b) =>
+              ("" + a.fullName).localeCompare(b.fullName)
+            )
+          );
+        }
       })
       .catch((_) => {
+        toast.error("Server Error");
         unauthorizedErrorHandler();
       });
   };
@@ -48,25 +52,31 @@ const ContactManager = () => {
   const updateContact = (contact) => {
     updateContactAPI(contact, authTokens)
       .then((res) => {
-        setContactsList(
-          contactsList.map((contact) =>
-            contact.contactId === res.contactId ? res : contact
-          )
-        );
+        if(!res.statusCode) {
+          setContactsList(
+            contactsList.map((contact) =>
+              contact.contactId === res.contactId ? res : contact
+            )
+          );
+        }
       })
       .catch((_) => {
+       toast.error("Server Error");
         unauthorizedErrorHandler();
       });
   };
 
   const deleteContact = (contactId) => {
     deleteContactAPI(contactId, authTokens)
-      .then((_) => {
-        setContactsList(
-          contactsList.filter((contact) => contact.contactId !== contactId)
-        );
+      .then((res) => {
+        if(res.status === 200) {
+          setContactsList(
+            contactsList.filter((contact) => contact.contactId !== contactId)
+          );
+        }
       })
       .catch((_) => {
+        toast.error("Server Error");
         unauthorizedErrorHandler();
       });
   };

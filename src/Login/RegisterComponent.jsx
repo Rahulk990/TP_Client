@@ -68,7 +68,7 @@ const RegisterComponent = () => {
           setIsLoading(true);
           setTimeout(() => setIsLoading(false), 1000);
         }
-      });
+      }).catch(e => toast.error("Server Error"));
     }
   };
 
