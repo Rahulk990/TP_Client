@@ -9,7 +9,9 @@ const sendGetRequest = (url, token) => {
   }).then((res) => {
     if (res.status === 401) {
       toast.info("Please login again")
-      //throw new Error("Unauthorized");
+      throw new Error("Unauthorized");
+    } else if(res.status === 400) {
+      throw new Error("Bad request"); 
     } else {
       return res.json();
     }

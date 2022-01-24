@@ -63,7 +63,6 @@ const RegisterComponent = () => {
         }
       }).then(res => {
         if(res) {
-          console.log("hgfhghgh");
           setLocalAuthTokens(res);
           setAuthTokens(res);
           setIsLoading(true);
