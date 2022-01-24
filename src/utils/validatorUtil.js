@@ -7,7 +7,6 @@ export const validateEmail = (email) => {
   if (email.trim() === "") {
     return cannotBeEmpty("Email");
   }
-
   if (!email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i)) {
     return invalidField("Email");
   }
@@ -15,14 +14,11 @@ export const validateEmail = (email) => {
   return null;
 };
 
-export const validatePassword = (password) => {
-  console.log(password);
-
+export const validatePassword = (password, checkLength = true) => {
   if (password.trim() === "") {
     return cannotBeEmpty("Password");
   }
-
-  if (password.length < 8) {
+  if (password.length < 8 && checkLength) {
     return lengthError("Password", 8);
   }
 

@@ -9,9 +9,9 @@ import { useContact } from "../../utils/contextUtils";
 
 const styles = {
   container: {
-    width: "80%",
+    width: "100%",
     backgroundColor: "white",
-    fontSize: "30px",
+    fontSize: "24px",
     padding: "10px",
     marginTop: "10px",
     marginBottom: "10px",
@@ -38,33 +38,31 @@ const Contact = ({ contact, isSearch }) => {
 
   return (
     <div className="d-flex justify-content-center">
-      <Card
-        variant="outlined"
-        style={styles.container}
-        className="d-flex justify-content-between align-items-center"
-      >
-        <span style={{ marginRight: "10px" }}>{contact.fullName}</span>
-        <span>{contact.phoneNumber}</span>
-        <div className="d-flex justify-content-between">
-          <VisibilityIcon style={styles.icon} onClick={viewHandler} />
-          {openView && (
-            <ContactExpanded
-              open={openView}
-              handleClose={() => setOpenView(false)}
-              editMode={false}
-              contact={contact}
-            />
-          )}
-          <EditIcon style={styles.icon} onClick={() => setOpenEdit(true)} />
-          {openEdit && (
-            <ContactDialog
-              open={openEdit}
-              handleClose={() => setOpenEdit(false)}
-              editMode={true}
-              contact={contact}
-            />
-          )}
-          <DeleteIcon style={styles.icon} onClick={deleteHandler} />
+      <Card variant="outlined" style={styles.container} className="container">
+        <div className="row">
+          <div className="col">{contact.fullName}</div>
+          <div className="col">{contact.phoneNumber}</div>
+          <div className="col d-flex justify-content-end align-items-center">
+            <VisibilityIcon style={styles.icon} onClick={viewHandler} />
+            {openView && (
+              <ContactExpanded
+                open={openView}
+                handleClose={() => setOpenView(false)}
+                editMode={false}
+                contact={contact}
+              />
+            )}
+            <EditIcon style={styles.icon} onClick={() => setOpenEdit(true)} />
+            {openEdit && (
+              <ContactDialog
+                open={openEdit}
+                handleClose={() => setOpenEdit(false)}
+                editMode={true}
+                contact={contact}
+              />
+            )}
+            <DeleteIcon style={styles.icon} onClick={deleteHandler} />
+          </div>
         </div>
       </Card>
     </div>

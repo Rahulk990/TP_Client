@@ -1,67 +1,61 @@
-import React, { useCallback, useEffect, useState } from "react";
-import Navbar from "./Navbar";
+import React, { useEffect, useState } from "react";
 import AddContact from "./AddContact";
 import SearchBar from "./SearchBar";
 import ContactList from "./ContactList/ContactList.js";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useAuth, useContact } from "../utils/contextUtils";
-import { getUserData } from "../utils/APIUtils";
-import { removeLocalAuthTokens } from "../utils/localStorageUtils";
+import { useContact } from "../utils/contextUtils";
 import { Box } from "@mui/system";
 import { filterAndSortList } from "../utils/filterUtil";
 import { ToastContainer } from "react-toastify";
+import { useDebounce } from "../utils/debounceUtil";
 
 const ContactsPage = () => {
-  const [userData, setUserData] = useState({});
+  const [searchValue, setSearchValue] = useState("");
   const [filteredList, setFilteredList] = useState([]);
-  const { authTokens, setAuthTokens } = useAuth();
   const { contactsList } = useContact();
 
+  const debouncedSearchValue = useDebounce(searchValue.toUpperCase(), 500);
   useEffect(() => {
-    getUserData(authTokens)
-      .then((res) => {
-        setUserData(res);
-      })
-      .catch((_) => {
-        removeLocalAuthTokens();
-        setUserData({});
-        setAuthTokens("");
-      });
-  }, [authTokens, setAuthTokens]);
+    debouncedSearchValue === ""
+      ? setFilteredList([])
+      : setFilteredList(filterAndSortList(contactsList, debouncedSearchValue));
+  }, [debouncedSearchValue, contactsList]);
 
-  const filterList = useCallback(
-    (value) => {
-      value === ""
-        ? setFilteredList([])
-        : setFilteredList(filterAndSortList(contactsList, value));
-    },
-    [contactsList]
-  );
-
-  const contactsListProp = filteredList.length ? filteredList : contactsList;
+  const contactsListProp =
+    debouncedSearchValue === "" ? contactsList : filteredList;
 
   return (
     <>
-      <Navbar userData={userData} />
       <Box
         sx={{
-          marginTop: 10,
           display: "flex",
-          justifyContent: "center",
-          flex: 1,
-          gap: 10,
-          padding: "0 40px",
+          alignItems: "center",
+          flexDirection: "column",
         }}
       >
-        <SearchBar filterList={filterList} />
-        <AddContact />
+        <Box
+          sx={{
+            marginTop: 5,
+            display: "flex",
+            justifyContent: "space-between",
+            flex: 1,
+            width: "80%",
+            alignSelf: "center",
+          }}
+        >
+          <SearchBar
+            searchValue={searchValue}
+            setSearchValue={setSearchValue}
+          />
+          <AddContact />
+        </Box>
+        <div style={{ marginTop: "50px", width: "80%" }}>
+          <ContactList
+            contactsList={contactsListProp}
+            isSearch={debouncedSearchValue !== ""}
+          />
+        </div>
       </Box>
-      <div style={{ marginTop: "50px" }}>
-        <ContactList
-          contactsList={contactsListProp}
-          isSearch={filteredList.length}
-        />
-      </div>
       <ToastContainer position="bottom-center"
         autoClose={5000}
         hideProgressBar={false}

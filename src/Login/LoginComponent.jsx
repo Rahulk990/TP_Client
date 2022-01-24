@@ -18,7 +18,7 @@ const STATE_LOGIN_ERROR = {
   password: null,
 };
 
-const LoginComponent = () => {
+const LoginComponent = ({ togglePage }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginData, setLoginData] = useState(STATE_LOGIN_DATA);
   const [loginError, setLoginError] = useState(STATE_LOGIN_ERROR);
@@ -31,7 +31,7 @@ const LoginComponent = () => {
 
   const validate = () => {
     const emailError = validateEmail(loginData.email);
-    const passwordError = validatePassword(loginData.password);
+    const passwordError = validatePassword(loginData.password, false);
 
     if (emailError || passwordError) {
       setLoginError({
@@ -48,20 +48,16 @@ const LoginComponent = () => {
     if (validate()) {
       loginUser(loginData).then((res) => {
         setTimeout(() => setIsLoading(false), 1000);
-        if (res.status === 404) {
+        if (res.statusCode===404 || res.statusCode === 400) {
           setLoginError({
             email: ERROR_WRONG_CREDENTIALS,
             password: ERROR_WRONG_CREDENTIALS,
           });
-        } else if(res.status === 400){
-          toast.error("Please enter valid values")
-        }  else {
-          return res.text();
+        } else {
+          setLocalAuthTokens(res.token);
+          setAuthTokens(res.token);
+          setIsLoading(true);
         }
-      }).then(res => {
-        setLocalAuthTokens(res);
-        setAuthTokens(res);
-        setIsLoading(true);
       }).catch(e => toast.error("Server Error"));
     }
   };
@@ -95,6 +91,7 @@ const LoginComponent = () => {
           onChange={changeHandler("password")}
           helperText={loginError.password}
         />
+
         {isLoading ? (
           <CircularProgress />
         ) : (
@@ -102,6 +99,14 @@ const LoginComponent = () => {
             Sign In
           </Button>
         )}
+
+        <p>
+          New User? Click{" "}
+          <span className="link" onClick={togglePage}>
+            Here
+          </span>{" "}
+          to Register
+        </p>
       </Box>
     </div>
   );

@@ -1,5 +1,7 @@
 import { toast } from "react-toastify";
-import { BASE_URL } from "./globalConstants";
+import {
+  BASE_URL,
+} from "./globalConstants";
 
 const sendGetRequest = (url, token) => {
   return fetch(url, {
@@ -30,12 +32,16 @@ const sendPostRequest = (url, data) => {
 
 export const loginUser = (data) => {
   const url = BASE_URL + "/login";
-  return sendPostRequest(url, data);
+  return sendPostRequest(url, data).then((res) => {
+      return res.json();
+  });
 };
 
 export const registerUser = (data) => {
   const url = BASE_URL + "/register";
-  return sendPostRequest(url, data);
+  return sendPostRequest(url, data).then((res) => {
+      return res.json();
+  });
 };
 
 export const getUserData = (token) => {
@@ -100,7 +106,6 @@ export const deleteContactAPI = (contactId, token) => {
   return fetch(url, {
     method: "DELETE",
     headers: {
-      "Content-Type": "application/json",
       Authorization: token,
     },
   }).then((res) => {
@@ -110,5 +115,41 @@ export const deleteContactAPI = (contactId, token) => {
       toast.error("Contact Not Found") 
     } 
     return res;
+  });
+};
+
+export const getLatestIdAPI = (token) => {
+  const url = BASE_URL + "/latestId";
+
+  return fetch(url, {
+    headers: {
+      Authorization: token,
+    },
+  }).then((res) => {
+    if (res.status === 401) {
+      throw new Error("Unauthorized");
+    } else if (res.status === 500) {
+      return null;
+    } else {
+      return res.json();
+    }
+  });
+};
+
+export const getLatestUpdatesAPI = (token, latestId) => {
+  const url = BASE_URL + "/updates/" + latestId;
+
+  return fetch(url, {
+    headers: {
+      Authorization: token,
+    },
+  }).then((res) => {
+    if (res.status === 401) {
+      throw new Error("Unauthorized");
+    } else if (res.status === 500) {
+      return null;
+    } else {
+      return res.json();
+    }
   });
 };
