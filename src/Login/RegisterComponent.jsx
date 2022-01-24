@@ -23,7 +23,7 @@ const STATE_REGISTER_ERROR = {
   password: null,
 };
 
-const RegisterComponent = () => {
+const RegisterComponent = ({ togglePage }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [registerData, setRegisterData] = useState(STATE_REGISTER_DATA);
   const [registerError, setRegisterError] = useState(STATE_REGISTER_ERROR);
@@ -54,17 +54,13 @@ const RegisterComponent = () => {
   const registerHandler = () => {
     if (validate()) {
       registerUser(registerData).then((res) => {
-        if (res.status === 409) {
+        if (res.statusCode === 409) {
           setRegisterError({ ...registerError, email: ERROR_EMAIL_EXISTS });
-        } else if(res.status === 400){
+        } else if(res.statusCode === 400) {
           toast.error("Please enter valid values")
         } else {
-          return res.text();
-        }
-      }).then(res => {
-        if(res) {
-          setLocalAuthTokens(res);
-          setAuthTokens(res);
+          setLocalAuthTokens(res.token);
+          setAuthTokens(res.token);
           setIsLoading(true);
           setTimeout(() => setIsLoading(false), 1000);
         }
@@ -117,6 +113,14 @@ const RegisterComponent = () => {
             Sign Up
           </Button>
         )}
+
+        <p>
+          Already Registered? Click{" "}
+          <span className="link" onClick={togglePage}>
+            Here
+          </span>{" "}
+          to Login
+        </p>
       </Box>
     </div>
   );

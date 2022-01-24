@@ -1,24 +1,15 @@
 import { TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-function SearchBar({ filterList }) {
-  const [searchValue, setSearchValue] = useState("");
-
-  useEffect(() => {
-    searchValue === "" && filterList("");
-  }, [searchValue, filterList]);
-
+function SearchBar({ searchValue, setSearchValue }) {
   return (
     <TextField
       label="Search Contact"
       type="search"
       variant="outlined"
-      style={{ width: "70%" }}
+      style={{ width: "80%" }}
       value={searchValue}
       onChange={(e) => setSearchValue(e.target.value)}
-      onKeyDown={(e) => {
-        e.key === "Enter" && filterList(searchValue.toUpperCase());
-      }}
     />
   );
 }
