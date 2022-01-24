@@ -63,13 +63,12 @@ const RegisterComponent = () => {
         }
       }).then(res => {
         if(res) {
-          console.log("hgfhghgh");
           setLocalAuthTokens(res);
           setAuthTokens(res);
           setIsLoading(true);
           setTimeout(() => setIsLoading(false), 1000);
         }
-      });
+      }).catch(e => toast.error("Server Error"));
     }
   };
 
