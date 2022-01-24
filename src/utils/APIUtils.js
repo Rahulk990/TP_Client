@@ -126,30 +126,17 @@ export const getLatestIdAPI = (token) => {
       Authorization: token,
     },
   }).then((res) => {
-    if (res.status === 401) {
-      throw new Error("Unauthorized");
-    } else if (res.status === 500) {
-      return null;
-    } else {
       return res.json();
-    }
   });
 };
 
 export const getLatestUpdatesAPI = (token, latestId) => {
   const url = BASE_URL + "/updates/" + latestId;
-
   return fetch(url, {
     headers: {
       Authorization: token,
     },
   }).then((res) => {
-    if (res.status === 401) {
-      throw new Error("Unauthorized");
-    } else if (res.status === 500) {
-      return null;
-    } else {
       return res.json();
-    }
   });
 };

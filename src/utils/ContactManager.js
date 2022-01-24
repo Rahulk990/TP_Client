@@ -40,7 +40,7 @@ const ContactManager = () => {
   const fetchLatestId = useCallback(() => {
     getLatestIdAPI(authTokens)
       .then((res) => {
-        if (res) {
+        if (res && !res.statusCode) {
           // console.log(res.latestId);
           setLatestId(res.latestId);
           fetchContactList();
@@ -86,14 +86,15 @@ const ContactManager = () => {
   const fetchLatestUpdates = useCallback(() => {
     getLatestUpdatesAPI(authTokens, latestId)
       .then((res) => {
-        if (res && res.transactionList.length) {
+      
+        if (res && !res.statusCode && res.transactionList.length) {
           processTransactions(res.transactionList);
         }
       })
       .catch((_) => {
-        unauthorizedErrorHandler();
+        //unauthorizedErrorHandler();
       });
-  }, [authTokens, latestId, processTransactions, unauthorizedErrorHandler]);
+  }, [authTokens, latestId, processTransactions]);
 
   const addContact = (contact) => {
     addContactAPI(contact, authTokens)
@@ -108,7 +109,7 @@ const ContactManager = () => {
       })
       .catch((_) => {
         toast.error("Server Error");
-        unauthorizedErrorHandler();
+        //unauthorizedErrorHandler();
       });
   };
 
@@ -125,7 +126,7 @@ const ContactManager = () => {
       })
       .catch((_) => {
        toast.error("Server Error");
-        unauthorizedErrorHandler();
+        //unauthorizedErrorHandler();
       });
   };
 
@@ -140,7 +141,7 @@ const ContactManager = () => {
       })
       .catch((_) => {
         toast.error("Server Error");
-        unauthorizedErrorHandler();
+        //unauthorizedErrorHandler();
       });
   };
 
