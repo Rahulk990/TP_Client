@@ -13,16 +13,16 @@ import {
 const STATE_REGISTER_DATA = {
   fullName: "",
   email: "",
-  passwordHash: "",
+  password: "",
 };
 
 const STATE_REGISTER_ERROR = {
   fullName: null,
   email: null,
-  passwordHash: null,
+  password: null,
 };
 
-const RegisterComponent = () => {
+const RegisterComponent = ({ togglePage }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [registerData, setRegisterData] = useState(STATE_REGISTER_DATA);
   const [registerError, setRegisterError] = useState(STATE_REGISTER_ERROR);
@@ -36,13 +36,13 @@ const RegisterComponent = () => {
   const validate = () => {
     const fullNameError = validateFullName(registerData.fullName);
     const emailError = validateEmail(registerData.email);
-    const passwordError = validatePassword(registerData.passwordHash);
+    const passwordError = validatePassword(registerData.password);
 
     if (emailError || passwordError || fullNameError) {
       setRegisterError({
         fullName: fullNameError,
         email: emailError,
-        passwordHash: passwordError,
+        password: passwordError,
       });
       return false;
     }
@@ -53,11 +53,13 @@ const RegisterComponent = () => {
   const registerHandler = () => {
     if (validate()) {
       registerUser(registerData).then((res) => {
-        if (res === ERROR_EMAIL_EXISTS) {
+        if (!res) {
+          return;
+        } else if (res === ERROR_EMAIL_EXISTS) {
           setRegisterError({ ...registerError, email: ERROR_EMAIL_EXISTS });
         } else {
-          setLocalAuthTokens(res);
-          setAuthTokens(res);
+          setLocalAuthTokens(res.value);
+          setAuthTokens(res.value);
         }
         setTimeout(() => setIsLoading(false), 1000);
       });
@@ -95,12 +97,12 @@ const RegisterComponent = () => {
         />
         <TextField
           style={{ width: "100%" }}
-          error={!!registerError.passwordHash}
+          error={!!registerError.password}
           label="Password"
           type="password"
-          value={registerData.passwordHash}
-          onChange={changeHandler("passwordHash")}
-          helperText={registerError.passwordHash}
+          value={registerData.password}
+          onChange={changeHandler("password")}
+          helperText={registerError.password}
         />
 
         {isLoading ? (
@@ -110,6 +112,14 @@ const RegisterComponent = () => {
             Sign Up
           </Button>
         )}
+
+        <p>
+          Already Registered? Click{" "}
+          <span className="link" onClick={togglePage}>
+            Here
+          </span>{" "}
+          to Login
+        </p>
       </Box>
     </div>
   );

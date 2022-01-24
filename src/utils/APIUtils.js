@@ -1,4 +1,8 @@
-import { BASE_URL } from "./globalConstants";
+import {
+  BASE_URL,
+  ERROR_EMAIL_EXISTS,
+  ERROR_WRONG_CREDENTIALS,
+} from "./globalConstants";
 
 const sendGetRequest = (url, token) => {
   return fetch(url, {
@@ -8,6 +12,8 @@ const sendGetRequest = (url, token) => {
   }).then((res) => {
     if (res.status === 401) {
       throw new Error("Unauthorized");
+    } else if (res.status === 500) {
+      return null;
     } else {
       return res.json();
     }
@@ -21,17 +27,33 @@ const sendPostRequest = (url, data) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  }).then((res) => res.text());
+  });
 };
 
 export const loginUser = (data) => {
   const url = BASE_URL + "/login";
-  return sendPostRequest(url, data);
+  return sendPostRequest(url, data).then((res) => {
+    if (res.status === 404 || res.status === 400) {
+      return ERROR_WRONG_CREDENTIALS;
+    } else if (res.status === 500) {
+      return null;
+    } else {
+      return res.json();
+    }
+  });
 };
 
 export const registerUser = (data) => {
   const url = BASE_URL + "/register";
-  return sendPostRequest(url, data);
+  return sendPostRequest(url, data).then((res) => {
+    if (res.status === 409 || res.status === 400) {
+      return ERROR_EMAIL_EXISTS;
+    } else if (res.status === 500) {
+      return null;
+    } else {
+      return res.json();
+    }
+  });
 };
 
 export const getUserData = (token) => {
@@ -57,8 +79,11 @@ export const addContactAPI = (contact, token) => {
   }).then((res) => {
     if (res.status === 401) {
       throw new Error("Unauthorized");
-    } else if(res.status === 409) {
-      throw new Error("Contact Already Exists") 
+    } else if (res.status === 409) {
+      alert("Contact Already Exists");
+      return null;
+    } else if (res.status === 500) {
+      return null;
     } else {
       return res.json();
     }
@@ -78,8 +103,11 @@ export const updateContactAPI = (contact, token) => {
   }).then((res) => {
     if (res.status === 401) {
       throw new Error("Unauthorized");
-    } else if(res.status === 404) {
-      throw new Error("Contact Not Found") 
+    } else if (res.status === 404) {
+      alert("Contact Not Found");
+      return null;
+    } else if (res.status === 500) {
+      return null;
     } else {
       return res.json();
     }
@@ -92,16 +120,54 @@ export const deleteContactAPI = (contactId, token) => {
   return fetch(url, {
     method: "DELETE",
     headers: {
-      "Content-Type": "application/json",
       Authorization: token,
     },
   }).then((res) => {
     if (res.status === 401) {
       throw new Error("Unauthorized");
-    } else if(res.status === 404) {
-      throw new Error("Contact Not Found") 
+    } else if (res.status === 404) {
+      alert("Contact Not Found");
+      return null;
+    } else if (res.status === 500) {
+      return null;
     } else {
       return res.text();
+    }
+  });
+};
+
+export const getLatestIdAPI = (token) => {
+  const url = BASE_URL + "/latestId";
+
+  return fetch(url, {
+    headers: {
+      Authorization: token,
+    },
+  }).then((res) => {
+    if (res.status === 401) {
+      throw new Error("Unauthorized");
+    } else if (res.status === 500) {
+      return null;
+    } else {
+      return res.json();
+    }
+  });
+};
+
+export const getLatestUpdatesAPI = (token, latestId) => {
+  const url = BASE_URL + "/updates/" + latestId;
+
+  return fetch(url, {
+    headers: {
+      Authorization: token,
+    },
+  }).then((res) => {
+    if (res.status === 401) {
+      throw new Error("Unauthorized");
+    } else if (res.status === 500) {
+      return null;
+    } else {
+      return res.json();
     }
   });
 };

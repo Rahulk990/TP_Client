@@ -8,15 +8,15 @@ import { validateEmail, validatePassword } from "../utils/validatorUtil";
 
 const STATE_LOGIN_DATA = {
   email: "",
-  passwordHash: "",
+  password: "",
 };
 
 const STATE_LOGIN_ERROR = {
   email: null,
-  passwordHash: null,
+  password: null,
 };
 
-const LoginComponent = () => {
+const LoginComponent = ({ togglePage }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginData, setLoginData] = useState(STATE_LOGIN_DATA);
   const [loginError, setLoginError] = useState(STATE_LOGIN_ERROR);
@@ -29,12 +29,12 @@ const LoginComponent = () => {
 
   const validate = () => {
     const emailError = validateEmail(loginData.email);
-    const passwordError = validatePassword(loginData.passwordHash);
+    const passwordError = validatePassword(loginData.password, false);
 
     if (emailError || passwordError) {
       setLoginError({
         email: emailError,
-        passwordHash: passwordError,
+        password: passwordError,
       });
       return false;
     }
@@ -45,14 +45,16 @@ const LoginComponent = () => {
   const signInHandler = () => {
     if (validate()) {
       loginUser(loginData).then((res) => {
-        if (res === ERROR_WRONG_CREDENTIALS) {
+        if (!res) {
+          return;
+        } else if (res === ERROR_WRONG_CREDENTIALS) {
           setLoginError({
             email: ERROR_WRONG_CREDENTIALS,
-            passwordHash: ERROR_WRONG_CREDENTIALS,
+            password: ERROR_WRONG_CREDENTIALS,
           });
         } else {
-          setLocalAuthTokens(res);
-          setAuthTokens(res);
+          setLocalAuthTokens(res.value);
+          setAuthTokens(res.value);
         }
         setTimeout(() => setIsLoading(false), 1000);
       });
@@ -82,13 +84,14 @@ const LoginComponent = () => {
         />
         <TextField
           style={{ width: "100%" }}
-          error={!!loginError.passwordHash}
+          error={!!loginError.password}
           label="Password"
           type="password"
-          value={loginData.passwordHash}
-          onChange={changeHandler("passwordHash")}
-          helperText={loginError.passwordHash}
+          value={loginData.password}
+          onChange={changeHandler("password")}
+          helperText={loginError.password}
         />
+
         {isLoading ? (
           <CircularProgress />
         ) : (
@@ -96,6 +99,14 @@ const LoginComponent = () => {
             Sign In
           </Button>
         )}
+
+        <p>
+          New User? Click{" "}
+          <span className="link" onClick={togglePage}>
+            Here
+          </span>{" "}
+          to Register
+        </p>
       </Box>
     </div>
   );

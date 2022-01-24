@@ -1,15 +1,15 @@
 import { useState } from "react";
 import "./App.css";
-import ContactsPage from "./Contacts/ContactsPage";
 import LoginPage from "./Login/LoginPage";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { AuthContext, ContactContext } from "./utils/contextUtils";
 import ContactManager from "./utils/ContactManager";
+import ContactsMain from "./Contacts/ContactsMain";
 
 const ContactsWrapper = () => {
   return (
     <ContactContext.Provider value={ContactManager()}>
-      <ContactsPage />
+      <ContactsMain />
     </ContactContext.Provider>
   );
 };
