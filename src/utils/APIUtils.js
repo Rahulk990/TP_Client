@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { BASE_URL } from "./globalConstants";
 
 const sendGetRequest = (url, token) => {
@@ -7,7 +8,8 @@ const sendGetRequest = (url, token) => {
     },
   }).then((res) => {
     if (res.status === 401) {
-      throw new Error("Unauthorized");
+      toast.info("Please login again")
+      //throw new Error("Unauthorized");
     } else {
       return res.json();
     }
@@ -21,7 +23,7 @@ const sendPostRequest = (url, data) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  }).then((res) => res.text());
+  }).catch(e => console.log("Error"));
 };
 
 export const loginUser = (data) => {
@@ -56,9 +58,11 @@ export const addContactAPI = (contact, token) => {
     body: JSON.stringify(contact),
   }).then((res) => {
     if (res.status === 401) {
-      throw new Error("Unauthorized");
+      toast.info("Please login again");
     } else if(res.status === 409) {
-      throw new Error("Contact Already Exists") 
+      toast.error("Contact Already Exists");
+    } else if(res.status === 400) {
+      toast.error("Please enter valid values"); 
     } else {
       return res.json();
     }
@@ -76,14 +80,21 @@ export const updateContactAPI = (contact, token) => {
     },
     body: JSON.stringify(contact),
   }).then((res) => {
-    if (res.status === 401) {
-      throw new Error("Unauthorized");
-    } else if(res.status === 404) {
-      throw new Error("Contact Not Found") 
-    } else {
+      if (res.status === 401) {
+        toast.info("Please login again");
+      } else if(res.status === 404) {
+        toast.error("Contact Not Found") 
+      } else if(res.status === 400) {
+        toast.error("Please enter valid values"); 
+      }
+      if(res.status !== 200){
+        throw new Error();
+      }
       return res.json();
     }
-  });
+  ).catch(e => 
+    {console.log("Error")}
+  );
 };
 
 export const deleteContactAPI = (contactId, token) => {
@@ -97,9 +108,9 @@ export const deleteContactAPI = (contactId, token) => {
     },
   }).then((res) => {
     if (res.status === 401) {
-      throw new Error("Unauthorized");
+      toast.info("Please login again");
     } else if(res.status === 404) {
-      throw new Error("Contact Not Found") 
+      toast.error("Contact Not Found") 
     } else {
       return res.text();
     }

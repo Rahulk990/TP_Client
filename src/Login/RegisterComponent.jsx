@@ -9,17 +9,18 @@ import {
   validateFullName,
   validatePassword,
 } from "../utils/validatorUtil";
+import { toast } from "react-toastify";
 
 const STATE_REGISTER_DATA = {
   fullName: "",
   email: "",
-  passwordHash: "",
+  password: "",
 };
 
 const STATE_REGISTER_ERROR = {
   fullName: null,
   email: null,
-  passwordHash: null,
+  password: null,
 };
 
 const RegisterComponent = () => {
@@ -36,13 +37,13 @@ const RegisterComponent = () => {
   const validate = () => {
     const fullNameError = validateFullName(registerData.fullName);
     const emailError = validateEmail(registerData.email);
-    const passwordError = validatePassword(registerData.passwordHash);
+    const passwordError = validatePassword(registerData.password);
 
     if (emailError || passwordError || fullNameError) {
       setRegisterError({
         fullName: fullNameError,
         email: emailError,
-        passwordHash: passwordError,
+        password: passwordError,
       });
       return false;
     }
@@ -53,15 +54,22 @@ const RegisterComponent = () => {
   const registerHandler = () => {
     if (validate()) {
       registerUser(registerData).then((res) => {
-        if (res === ERROR_EMAIL_EXISTS) {
+        if (res.status === 409) {
           setRegisterError({ ...registerError, email: ERROR_EMAIL_EXISTS });
+        } else if(res.status === 400){
+          toast.error("Please enter valid values")
         } else {
+          return res.text();
+        }
+      }).then(res => {
+        if(res) {
+          console.log("hgfhghgh");
           setLocalAuthTokens(res);
           setAuthTokens(res);
+          setIsLoading(true);
+          setTimeout(() => setIsLoading(false), 1000);
         }
-        setTimeout(() => setIsLoading(false), 1000);
       });
-      setIsLoading(true);
     }
   };
 
@@ -95,12 +103,12 @@ const RegisterComponent = () => {
         />
         <TextField
           style={{ width: "100%" }}
-          error={!!registerError.passwordHash}
+          error={!!registerError.password}
           label="Password"
           type="password"
-          value={registerData.passwordHash}
-          onChange={changeHandler("passwordHash")}
-          helperText={registerError.passwordHash}
+          value={registerData.password}
+          onChange={changeHandler("password")}
+          helperText={registerError.password}
         />
 
         {isLoading ? (
