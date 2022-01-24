@@ -58,8 +58,8 @@ const RegisterComponent = ({ togglePage }) => {
         } else if (res === ERROR_EMAIL_EXISTS) {
           setRegisterError({ ...registerError, email: ERROR_EMAIL_EXISTS });
         } else {
-          setLocalAuthTokens(res.value);
-          setAuthTokens(res.value);
+          setLocalAuthTokens(res.token);
+          setAuthTokens(res.token);
         }
         setTimeout(() => setIsLoading(false), 1000);
       });

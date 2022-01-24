@@ -53,8 +53,8 @@ const LoginComponent = ({ togglePage }) => {
             password: ERROR_WRONG_CREDENTIALS,
           });
         } else {
-          setLocalAuthTokens(res.value);
-          setAuthTokens(res.value);
+          setLocalAuthTokens(res.token);
+          setAuthTokens(res.token);
         }
         setTimeout(() => setIsLoading(false), 1000);
       });

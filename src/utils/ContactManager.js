@@ -11,7 +11,7 @@ import { useAuth } from "./contextUtils";
 import { removeLocalAuthTokens } from "./localStorageUtils";
 
 const syncManager = (fun) => {
-  return setInterval(fun, 10000);
+  return setInterval(fun, 2000);
 };
 
 const ContactManager = () => {
@@ -28,7 +28,7 @@ const ContactManager = () => {
     getContactsAPI(authTokens)
       .then((res) => {
         if (res) {
-          setContactsList(res);
+          setContactsList(res.contactList);
         }
       })
       .catch((_) => {
@@ -40,7 +40,8 @@ const ContactManager = () => {
     getLatestIdAPI(authTokens)
       .then((res) => {
         if (res) {
-          setLatestId(res.value);
+          // console.log(res.latestId);
+          setLatestId(res.latestId);
           fetchContactList();
         }
       })
@@ -54,7 +55,7 @@ const ContactManager = () => {
       let updatedContactsList = contactsList.slice();
       transactions.forEach((transaction) => {
         const contact = JSON.parse(transaction.transactionString);
-        // console.log(contact);
+        // console.log(transaction);
 
         if (contact.isDeleted) {
           updatedContactsList = updatedContactsList.filter(
@@ -84,8 +85,8 @@ const ContactManager = () => {
   const fetchLatestUpdates = useCallback(() => {
     getLatestUpdatesAPI(authTokens, latestId)
       .then((res) => {
-        if (res && res.length) {
-          processTransactions(res);
+        if (res && res.transactionList.length) {
+          processTransactions(res.transactionList);
         }
       })
       .catch((_) => {
