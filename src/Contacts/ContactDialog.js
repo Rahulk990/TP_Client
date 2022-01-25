@@ -73,7 +73,7 @@ const ContactDialog = ({ open, handleClose, editMode, contact }) => {
   const saveHandler = () => {
     if (validate()) {
       editMode
-        ? updateContact(merge(contact, contactData))
+        ? updateContact(merge(contact, contactData), false)
         : addContact(contactData);
       handleClose();
     }
