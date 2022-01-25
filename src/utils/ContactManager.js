@@ -67,9 +67,9 @@ const ContactManager = () => {
             (cnt) => cnt.contactId === contact.contactId
           ) > -1
         ) {
-          updatedContactsList = updatedContactsList.map((cnt) =>
-            cnt.contactId === contact.contactId ? contact : cnt
-          );
+          updatedContactsList = updatedContactsList
+            .map((cnt) => (cnt.contactId === contact.contactId ? contact : cnt))
+            .sort((a, b) => ("" + a.fullName).localeCompare(b.fullName));
         } else {
           updatedContactsList = [...updatedContactsList, contact].sort((a, b) =>
             ("" + a.fullName).localeCompare(b.fullName)
@@ -86,7 +86,6 @@ const ContactManager = () => {
   const fetchLatestUpdates = useCallback(() => {
     getLatestUpdatesAPI(authTokens, latestId)
       .then((res) => {
-      
         if (res && !res.statusCode && res.transactionList.length) {
           processTransactions(res.transactionList);
         }
@@ -99,7 +98,7 @@ const ContactManager = () => {
   const addContact = (contact) => {
     addContactAPI(contact, authTokens)
       .then((res) => {
-        if(!res.statusCode) {
+        if (!res.statusCode) {
           setContactsList(
             [...contactsList, res].sort((a, b) =>
               ("" + a.fullName).localeCompare(b.fullName)
@@ -116,16 +115,18 @@ const ContactManager = () => {
   const updateContact = (contact, isScoreUpdate) => {
     updateContactAPI(contact, authTokens)
       .then((res) => {
-        if(!res.statusCode) {
+        if (!res.statusCode) {
           setContactsList(
-            contactsList.map((contact) =>
-              contact.contactId === res.contactId ? res : contact
-            )
+            contactsList
+              .map((contact) =>
+                contact.contactId === res.contactId ? res : contact
+              )
+              .sort((a, b) => ("" + a.fullName).localeCompare(b.fullName))
           );
         }
       })
       .catch((_) => {
-        if(!isScoreUpdate){
+        if (!isScoreUpdate) {
           toast.error("Server Error");
         }
         //unauthorizedErrorHandler();
@@ -135,7 +136,7 @@ const ContactManager = () => {
   const deleteContact = (contactId) => {
     deleteContactAPI(contactId, authTokens)
       .then((res) => {
-        if(res.status === 200) {
+        if (res.status === 200) {
           setContactsList(
             contactsList.filter((contact) => contact.contactId !== contactId)
           );
