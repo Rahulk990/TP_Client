@@ -33,7 +33,7 @@ const Contact = ({ contact, isSearch }) => {
 
   const viewHandler = () => {
     setOpenView(true);
-    isSearch && updateContact({ ...contact, score: contact.score + 1 });
+    isSearch && updateContact({ ...contact, score: contact.score + 1 }, true);
   };
 
   return (

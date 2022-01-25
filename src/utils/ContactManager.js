@@ -113,7 +113,7 @@ const ContactManager = () => {
       });
   };
 
-  const updateContact = (contact) => {
+  const updateContact = (contact, isScoreUpdate) => {
     updateContactAPI(contact, authTokens)
       .then((res) => {
         if(!res.statusCode) {
@@ -125,7 +125,9 @@ const ContactManager = () => {
         }
       })
       .catch((_) => {
-       toast.error("Server Error");
+        if(!isScoreUpdate){
+          toast.error("Server Error");
+        }
         //unauthorizedErrorHandler();
       });
   };
